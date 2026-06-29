@@ -49,12 +49,19 @@ export interface SEOJsonLdProps {
     postalCode?: string;
     addressCountry?: string;
   };
+  /**
+   * Custom override for geographical coordinates.
+   */
+  geo?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 /**
  * SEOJsonLd renders structured JSON-LD data for search engines.
  * It supports Organization, Local Business, and Product schemas.
- * XSS Security: JSON strings are sanitized using the recommended Next.js method.
+ * XSS Security: JSON strings are sanitized using robust escaping to prevent script injection.
  */
 export default function SEOJsonLd({
   renderOrganization = false,
@@ -71,112 +78,169 @@ export default function SEOJsonLd({
     postalCode: "395002",
     addressCountry: "IN",
   },
+  geo = {
+    latitude: 21.1702,
+    longitude: 72.8311,
+  },
 }: SEOJsonLdProps) {
-  const schemas: Record<string, any>[] = [];
+  // Extract individual fields to ensure stable dependency array for useMemo
+  const addressStreet = address?.streetAddress;
+  const addressLocality = address?.addressLocality;
+  const addressRegion = address?.addressRegion;
+  const addressPostalCode = address?.postalCode;
+  const addressCountry = address?.addressCountry;
 
-  // 1. Organization Schema
-  if (renderOrganization) {
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": `${domainUrl}/#organization`,
-      name: organizationName,
-      url: domainUrl,
-      logo: logoUrl,
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: telephone,
-        contactType: "customer service",
-        areaServed: "IN",
-        availableLanguage: ["en", "hi"],
-      },
-    });
-  }
+  const geoLatitude = geo?.latitude;
+  const geoLongitude = geo?.longitude;
 
-  // 2. Local Business Schema (Todi Creation's Surat-based ethnic wear manufacturing business)
-  if (renderLocalBusiness) {
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "@id": `${domainUrl}/#localbusiness`,
-      name: organizationName,
-      image: logoUrl,
-      url: domainUrl,
-      telephone: telephone,
-      priceRange: "$$",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: address.streetAddress || "Ring Road",
-        addressLocality: address.addressLocality || "Surat",
-        addressRegion: address.addressRegion || "Gujarat",
-        postalCode: address.postalCode || "395002",
-        addressCountry: address.addressCountry || "IN",
-      },
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: 21.1702,
-        longitude: 72.8311,
-      },
-    });
-  }
+  const productTitle = productData?.title;
+  const productDesc = productData?.description;
+  const productImagesSerialized = productData?.images?.join(",");
+  const productSku = productData?.sku;
+  const productPrice = productData?.price;
+  const productCategory = productData?.category;
+  const productFabric = productData?.fabric;
+  const productInStock = productData?.inStock;
+  const productUrl = productData?.url;
 
-  // 3. Product Schema
-  if (productData) {
-    const productSchema: Record<string, any> = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: productData.title,
-      image: productData.images,
-      description: productData.description,
-      sku: productData.sku,
-      offers: {
-        "@type": "Offer",
-        url: productData.url || domainUrl,
-        priceCurrency: "INR",
-        price: productData.price,
-        priceValidUntil: new Date(new Date().getFullYear() + 1, 11, 31)
-          .toISOString()
-          .split("T")[0], // Valid until end of next year
-        itemCondition: "https://schema.org/NewCondition",
-        availability: productData.inStock
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
-        seller: {
-          "@type": "Organization",
-          name: organizationName,
+  const serializedSchemas = React.useMemo(() => {
+    const schemas: Record<string, unknown>[] = [];
+
+    // 1. Organization Schema
+    if (renderOrganization) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": `${domainUrl}/#organization`,
+        name: organizationName,
+        url: domainUrl,
+        logo: logoUrl,
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: telephone,
+          contactType: "customer service",
+          areaServed: "IN",
+          availableLanguage: ["en", "hi"],
         },
-      },
-    };
-
-    if (productData.category) {
-      productSchema.category = productData.category;
-    }
-    if (productData.fabric) {
-      productSchema.material = productData.fabric;
+      });
     }
 
-    schemas.push(productSchema);
-  }
+    // 2. Local Business Schema
+    if (renderLocalBusiness) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "@id": `${domainUrl}/#localbusiness`,
+        name: organizationName,
+        image: logoUrl,
+        url: domainUrl,
+        telephone: telephone,
+        priceRange: "$$",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: addressStreet || "Ring Road",
+          addressLocality: addressLocality || "Surat",
+          addressRegion: addressRegion || "Gujarat",
+          postalCode: addressPostalCode || "395002",
+          addressCountry: addressCountry || "IN",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: geoLatitude ?? 21.1702,
+          longitude: geoLongitude ?? 72.8311,
+        },
+      });
+    }
 
-  if (schemas.length === 0) {
+    // 3. Product Schema
+    if (productData) {
+      const productSchema: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: productTitle || "Product",
+        image: Array.isArray(productData.images) ? productData.images : [logoUrl],
+        description: productDesc || "",
+        sku: productSku || "N/A",
+        offers: {
+          "@type": "Offer",
+          url: productUrl || domainUrl,
+          priceCurrency: "INR",
+          price: productPrice || 0,
+          priceValidUntil: new Date(new Date().getFullYear() + 1, 11, 31)
+            .toISOString()
+            .split("T")[0],
+          itemCondition: "https://schema.org/NewCondition",
+          availability: productInStock
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+          seller: {
+            "@type": "Organization",
+            name: organizationName,
+          },
+        },
+      };
+
+      if (productCategory) {
+        productSchema.category = productCategory;
+      }
+      if (productFabric) {
+        productSchema.material = productFabric;
+      }
+
+      schemas.push(productSchema);
+    }
+
+    return schemas.map((schema) => {
+      const jsonString = JSON.stringify(schema);
+      // Escape characters to prevent XSS (Next.js context-safe approach)
+      const sanitizedJson = jsonString
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026");
+
+      return {
+        type: schema["@type"] as string,
+        content: sanitizedJson,
+      };
+    });
+  }, [
+    renderOrganization,
+    renderLocalBusiness,
+    organizationName,
+    logoUrl,
+    domainUrl,
+    telephone,
+    addressStreet,
+    addressLocality,
+    addressRegion,
+    addressPostalCode,
+    addressCountry,
+    geoLatitude,
+    geoLongitude,
+    productTitle,
+    productDesc,
+    productImagesSerialized,
+    productSku,
+    productPrice,
+    productInStock,
+    productUrl,
+    productCategory,
+    productFabric,
+  ]);
+
+  if (serializedSchemas.length === 0) {
     return null;
   }
 
   return (
     <>
-      {schemas.map((schema, index) => {
-        const jsonString = JSON.stringify(schema);
-        // Next.js recommended sanitize method to prevent XSS:
-        const sanitizedJson = jsonString.replace(/</g, "\\u003c");
-
-        return (
-          <script
-            key={`${schema["@type"]}-${index}`}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: sanitizedJson }}
-          />
-        );
-      })}
+      {serializedSchemas.map((schema, index) => (
+        <script
+          key={`${schema.type}-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schema.content }}
+        />
+      ))}
     </>
   );
 }
