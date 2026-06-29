@@ -4,7 +4,7 @@
 - [x] Task 2: Setup Supabase Database Schema
 - [x] Task 3: Supabase Clients and Middleware Setup
 - [x] Task 4: Base Layout & State Management (Shopping Bag)
-- [ ] Task 5: SEO Helper and Schema Markup
+- [x] Task 5: SEO Helper and Schema Markup
 - [ ] Task 6: Homepage Component & Styling
 - [ ] Task 7: Product Catalog & Multi-Filters Sheet
 - [ ] Task 8: Product Details View
