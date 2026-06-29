@@ -5,7 +5,7 @@
 - [x] Task 3: Supabase Clients and Middleware Setup
 - [x] Task 4: Base Layout & State Management (Shopping Bag)
 - [x] Task 5: SEO Helper and Schema Markup
-- [ ] Task 6: Homepage Component & Styling
+- [x] Task 6: Homepage Component & Styling
 - [ ] Task 7: Product Catalog & Multi-Filters Sheet
 - [ ] Task 8: Product Details View
 - [ ] Task 9: Bag Drawer and Inquiry Submission
