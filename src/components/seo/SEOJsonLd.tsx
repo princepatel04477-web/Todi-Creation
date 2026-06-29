@@ -102,6 +102,12 @@ export default function SEOJsonLd({
   const productFabric = productData?.fabric;
   const productInStock = productData?.inStock;
   const productUrl = productData?.url;
+  const shouldRenderProduct = !!productData;
+
+  const productImages = React.useMemo(() => {
+    return productData?.images || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productImagesSerialized]);
 
   const serializedSchemas = React.useMemo(() => {
     const schemas: Record<string, unknown>[] = [];
@@ -153,12 +159,12 @@ export default function SEOJsonLd({
     }
 
     // 3. Product Schema
-    if (productData) {
+    if (shouldRenderProduct) {
       const productSchema: Record<string, unknown> = {
         "@context": "https://schema.org",
         "@type": "Product",
         name: productTitle || "Product",
-        image: Array.isArray(productData.images) ? productData.images : [logoUrl],
+        image: productImages.length > 0 ? productImages : [logoUrl],
         description: productDesc || "",
         sku: productSku || "N/A",
         offers: {
@@ -217,9 +223,10 @@ export default function SEOJsonLd({
     addressCountry,
     geoLatitude,
     geoLongitude,
+    shouldRenderProduct,
     productTitle,
+    productImages,
     productDesc,
-    productImagesSerialized,
     productSku,
     productPrice,
     productInStock,
