@@ -106,6 +106,17 @@
   
   /* Animations & Transitions defaults */
   --animate-fade-in: fade-in 0.5s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Local/Global Base resets and defaults */
@@ -122,15 +133,15 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
-/* Custom Glassmorphism Utility Classes */
-.glass {
+/* Custom Glassmorphism Utility Classes using Tailwind v4 @utility directive */
+@utility glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
 }
 
-.glass-card {
+@utility glass-card {
   background: var(--glass-card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -138,83 +149,83 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-luxury);
 }
 
-.glass-nav {
+@utility glass-nav {
   background: var(--glass-nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
 }
 
-/* Micro-interaction Helper Classes */
-.hover-lift {
+/* Micro-interaction Helper Classes using Tailwind v4 @utility directive */
+@utility hover-lift {
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-luxury-hover);
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-luxury-hover);
+  }
 }
 
-.hover-glow {
+@utility hover-glow {
   transition: box-shadow 0.3s ease;
-}
-.hover-glow:hover {
-  box-shadow: var(--shadow-glow);
+  &:hover {
+    box-shadow: var(--shadow-glow);
+  }
 }
 
-.hover-scale {
+@utility hover-scale {
   transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-}
-.hover-scale:hover {
-  transform: scale(1.02);
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 
-.hover-underline {
+@utility hover-underline {
   position: relative;
-}
-.hover-underline::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 1px;
-  bottom: -2px;
-  left: 0;
-  background-color: hsl(var(--primary));
-  transform-origin: bottom right;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-.hover-underline:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: hsl(var(--primary));
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
 }
 
-.active-press {
+@utility active-press {
   transition: transform 0.1s ease;
-}
-.active-press:active {
-  transform: scale(0.97);
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
-.btn-luxury {
+@utility btn-luxury {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-}
-.btn-luxury::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.15),
-    transparent
-  );
-  transition: all 0.6s ease;
-}
-.btn-luxury:hover::before {
-  left: 100%;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.15),
+      transparent
+    );
+    transition: all 0.6s ease;
+  }
+  &:hover::before {
+    left: 100%;
+  }
 }
