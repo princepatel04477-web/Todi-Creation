@@ -95,11 +95,17 @@ export default function Footer() {
                 <Mail className="w-4 h-4 text-primary shrink-0" />
                 <span>contact@todicreation.com</span>
               </li>
-              <li className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span className="text-emerald-500 hover:underline cursor-pointer">
-                  WhatsApp Direct Inquiry
-                </span>
+              <li>
+                <a
+                  href="https://wa.me/919999999999?text=Hello%20Todi%20Creation,%20I%20am%20interested%20in%20your%20ethnic%20wear%20collection."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-emerald-500 hover:underline cursor-pointer"
+                  aria-label="Direct inquiry on WhatsApp"
+                >
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <span>WhatsApp Direct Inquiry</span>
+                </a>
               </li>
             </ul>
           </div>

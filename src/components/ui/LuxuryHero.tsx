@@ -42,15 +42,17 @@ export default function LuxuryHero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Swipe gesture detection
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  // Swipe gesture detection with vertical scroll protection
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [touchEndY, setTouchEndY] = useState<number | null>(null);
   const minSwipeDistance = 50;
 
   const nextSlide = () => {
@@ -77,7 +79,7 @@ export default function LuxuryHero() {
 
   // GSAP animations for transitions
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    const ctx = gsap.context((self) => {
       // Staggered entry for copy elements
       gsap.fromTo(
         [titleRef.current, subtitleRef.current, buttonRef.current],
@@ -91,10 +93,11 @@ export default function LuxuryHero() {
         }
       );
 
-      // Ken Burns zoom-out effect on the image
-      if (imageContainerRef.current) {
+      // Target only the active slide's image container using GSAP selector scoped to containerRef
+      const activeImage = self.selector?.(".opacity-100 .hero-image-container");
+      if (activeImage && activeImage.length > 0) {
         gsap.fromTo(
-          imageContainerRef.current,
+          activeImage,
           { scale: 1.08 },
           {
             scale: 1,
@@ -103,7 +106,7 @@ export default function LuxuryHero() {
           }
         );
       }
-    });
+    }, containerRef);
 
     return () => ctx.revert();
   }, [currentSlide]);
@@ -116,45 +119,52 @@ export default function LuxuryHero() {
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     stopAutoplayTemporarily();
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchEndX(null);
+    setTouchEndY(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+    setTouchStartY(e.targetTouches[0].clientY);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEndX(e.targetTouches[0].clientX);
+    setTouchEndY(e.targetTouches[0].clientY);
   };
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    if (touchStartX === null || touchStartY === null || touchEndX === null || touchEndY === null) return;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
 
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
+    // Trigger next/prev slide only if horizontal move is greater than vertical move
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+      if (diffX > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
     }
   };
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-[65vh] sm:h-[80vh] md:h-[90vh] bg-neutral-950 overflow-hidden select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Slides Background Images */}
+      {/* Slides Background Images - All always mounted to support smooth cross-fade */}
       <div className="absolute inset-0 w-full h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-              index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
-          >
-            {index === currentSlide && (
-              <div ref={imageContainerRef} className="relative w-full h-full">
+        {slides.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <div
+              key={index}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <div className="relative w-full h-full hero-image-container">
                 <Image
                   src={slide.image}
                   alt={slide.title}
@@ -166,9 +176,9 @@ export default function LuxuryHero() {
                 {/* Elegant overlay for readability */}
                 <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/80 via-neutral-950/40 to-transparent sm:bg-gradient-to-t sm:from-neutral-950/90 sm:via-neutral-950/50 sm:to-neutral-950/20" />
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
       {/* Copy & Navigation Overlay Content */}

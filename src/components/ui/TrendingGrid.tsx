@@ -128,7 +128,7 @@ export default function TrendingGrid() {
                       ? "bg-emerald-500 border-emerald-500 text-white"
                       : "bg-transparent border-primary text-primary hover:bg-primary hover:text-white"
                   }`}
-                  aria-label="Add to Inquiry Bag"
+                  aria-label={isAdded ? `Added ${product.title} to inquiry bag` : `Add ${product.title} to inquiry bag`}
                 >
                   {isAdded ? (
                     <>

@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Search, Menu } from "lucide-react";
+import { ShoppingBag, Search, Menu, X } from "lucide-react";
 import { useBag } from "@/context/BagContext";
 
 export default function Header() {
   const { totalCount, toggleDrawer } = useBag();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full glass-nav select-none">
@@ -15,11 +16,16 @@ export default function Header() {
           {/* Mobile Menu Icon */}
           <div className="flex md:hidden">
             <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               type="button"
-              className="p-2 rounded-md text-neutral-500 hover:text-neutral-900 dark:hover:text-white focus:outline-none"
+              className="p-2 rounded-md text-neutral-500 hover:text-neutral-900 dark:hover:text-white focus:outline-none cursor-pointer"
               aria-label="Toggle menu"
             >
-              <Menu className="w-6 h-6" />
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
 
@@ -77,6 +83,35 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown Panel */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-neutral-100 dark:border-neutral-900 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md px-4 py-4 space-y-3">
+          <Link
+            href="/"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 text-base font-heading font-medium tracking-wide text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors uppercase"
+          >
+            Home
+          </Link>
+          <Link
+            href="/catalog"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 text-base font-heading font-medium tracking-wide text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors uppercase"
+          >
+            Catalog
+          </Link>
+          <button
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              toggleDrawer();
+            }}
+            className="w-full text-left block px-3 py-2 text-base font-heading font-medium tracking-wide text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors uppercase cursor-pointer"
+          >
+            Inquiry Bag ({totalCount})
+          </button>
+        </div>
+      )}
     </header>
   );
 }
