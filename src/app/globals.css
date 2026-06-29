@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+:root {
+  /* HSL luxury design tokens */
+  /* Background: rich ivory #fbfcfa */
+  --background: 80 15% 99%;
+  /* Foreground: deep charcoal #0f0f10 */
+  --foreground: 240 6% 6%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 240 6% 6%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 6% 6%;
+  
+  /* Accent: gold/brass #c5a880 */
+  --primary: 35 38% 64%;
+  --primary-hover: 35 35% 55%;
+  --primary-light: 35 38% 92%;
+  
+  --secondary: 0 0% 29%;
+  
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 5% 46%;
+  
+  --border: 240 6% 90%;
+  --border-light: 35 38% 90%;
+  
+  --glass-bg: rgba(251, 252, 250, 0.75);
+  --glass-card-bg: rgba(255, 255, 255, 0.8);
+  --glass-nav-bg: rgba(251, 252, 250, 0.85);
+  --glass-border: rgba(197, 168, 128, 0.15);
+  
+  --shadow-luxury: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  --shadow-luxury-hover: 0 20px 40px -15px rgba(197, 168, 128, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 15px rgba(197, 168, 128, 0.25);
+  
+  --radius-luxury: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Background: deep charcoal #0f0f10 */
+    --background: 240 6% 6%;
+    /* Foreground: rich ivory #fbfcfa */
+    --foreground: 80 15% 99%;
+    
+    --card: 240 6% 8%;
+    --card-foreground: 80 15% 99%;
+    
+    --popover: 240 6% 8%;
+    --popover-foreground: 80 15% 99%;
+    
+    --primary: 35 38% 64%;
+    --primary-hover: 35 45% 74%;
+    --primary-light: 35 25% 19%;
+    
+    --secondary: 240 5% 65%;
+    
+    --muted: 240 6% 12%;
+    --muted-foreground: 240 5% 65%;
+    
+    --border: 240 5% 16%;
+    --border-light: 35 38% 20%;
+    
+    --glass-bg: rgba(15, 15, 16, 0.75);
+    --glass-card-bg: rgba(20, 20, 22, 0.8);
+    --glass-nav-bg: rgba(15, 15, 16, 0.85);
+    --glass-border: rgba(197, 168, 128, 0.1);
+    
+    --shadow-luxury: 0 10px 35px -10px rgba(0, 0, 0, 0.4);
+    --shadow-luxury-hover: 0 20px 45px -15px rgba(0, 0, 0, 0.55);
+    --shadow-glow: 0 0 20px rgba(197, 168, 128, 0.2);
+  }
+}
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  
+  --color-primary: hsl(var(--primary));
+  --color-primary-hover: hsl(var(--primary-hover));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-secondary: hsl(var(--secondary));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-border: hsl(var(--border));
+  
+  /* Fonts */
+  --font-heading: var(--font-outfit), "Outfit", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  
+  /* Borders and Shadow style variables */
+  --border-luxury: 1px solid hsl(var(--border));
+  --border-luxury-gold: 1px solid hsl(var(--primary) / 0.3);
+  
+  --shadow-luxury: var(--shadow-luxury);
+  --shadow-luxury-hover: var(--shadow-luxury-hover);
+  --shadow-glow: var(--shadow-glow);
+  
+  --radius-luxury: var(--radius-luxury);
+  
+  /* Animations & Transitions defaults */
+  --animate-fade-in: fade-in 0.5s ease-out;
+}
+
+/* Local/Global Base resets and defaults */
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Custom Glassmorphism Utility Classes */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: var(--glass-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-luxury);
+}
+
+.glass-nav {
+  background: var(--glass-nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+/* Micro-interaction Helper Classes */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-luxury-hover);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+.hover-scale {
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: hsl(var(--primary));
+  transform-origin: bottom right;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.active-press {
+  transition: transform 0.1s ease;
+}
+.active-press:active {
+  transform: scale(0.97);
+}
+
+.btn-luxury {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.btn-luxury::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+.btn-luxury:hover::before {
+  left: 100%;
+}
